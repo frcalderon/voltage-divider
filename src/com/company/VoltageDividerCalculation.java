@@ -3,6 +3,7 @@ package com.company;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.IntStream;
 
 public class VoltageDividerCalculation {
 
@@ -26,8 +27,7 @@ public class VoltageDividerCalculation {
                 k = r2.getResistance() / (r1.getResistance() + r2.getResistance());
                 if ((voltageDivision - tol < k) && (k < voltageDivision + tol)) {
                     r1r2coincidence = 100 - (Math.abs(voltageDivision - k) * 100)/voltageDivision;
-                    VoltageDivider vd = new VoltageDivider(r1, r2, r1r2coincidence);
-                    result.add(vd);
+                    result.add(new VoltageDivider(r1, r2, r1r2coincidence));
                 }
             }
         }
@@ -35,7 +35,7 @@ public class VoltageDividerCalculation {
         return result;
     }
 
-    public static List<VoltageDivider> calculate(double voltageDivision, double coincidence, Series s) {
+    public static List<VoltageDivider> calculateOptimized(double voltageDivision, double coincidence, Series s) {
         /*
         K = (Vout / Vin)
         k = r2.getResistance() / (r1.getResistance() + r2.getResistance())
@@ -47,18 +47,17 @@ public class VoltageDividerCalculation {
         List<VoltageDivider> result = new ArrayList<VoltageDivider>();
         List<Resistor> resistors = s.getResistors();
         resistors.sort(Comparator.comparing(Resistor::getResistance));
-        double k = 0;
+        double k;
         double tol = voltageDivision * (100 - coincidence) / 100;
         double r1r2coincidence = 0;
         // non-optimized version at the moment and output to console
         for (Resistor r1 : resistors) {
-            for (Resistor r2 : resistors) {
-                k = r2.getResistance() / (r1.getResistance() + r2.getResistance());
-                if ((voltageDivision - tol < k) && (k < voltageDivision + tol)) {
-                    r1r2coincidence = 100 - (Math.abs(voltageDivision - k) * 100)/voltageDivision;
-                    VoltageDivider vd = new VoltageDivider(r1, r2, r1r2coincidence);
-                    result.add(vd);
-                }
+            final double r2Lower = (voltageDivision - tol) * r1.getResistance() / (1 - (voltageDivision - tol));
+            final double r2Upper = (voltageDivision + tol) * r1.getResistance() / (1 - (voltageDivision + tol));
+            for (Resistor rx : resistors.stream().filter(x -> x.getResistance() >= r2Lower && x.getResistance() < r2Upper).toList()) {
+                k = rx.getResistance() / (r1.getResistance() + rx.getResistance());
+                r1r2coincidence = 100 - (Math.abs(voltageDivision - k) * 100)/voltageDivision;
+                result.add(new VoltageDivider(r1, rx, r1r2coincidence));
             }
         }
         result.sort(Comparator.comparing(VoltageDivider::getCoincidence).reversed());

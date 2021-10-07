@@ -11,7 +11,7 @@ public class Series {
     private double[] normalizedValues = null;
     private static final double[] PowerFactors = {1., 10., 100., 1000., 1.0e+04, 1.0e+05, 1.0e+06};
 
-    public List getResistors() { return resistors; }
+    public List<Resistor> getResistors() { return resistors; }
 
     public String getName() { return name; }
 
