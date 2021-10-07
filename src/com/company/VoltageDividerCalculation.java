@@ -50,11 +50,13 @@ public class VoltageDividerCalculation {
         double k;
         double tol = voltageDivision * (100 - coincidence) / 100;
         double r1r2coincidence = 0;
-        // non-optimized version at the moment and output to console
+        List<Resistor> sublist = new ArrayList<Resistor>();
+        // Optimized version
         for (Resistor r1 : resistors) {
             final double r2Lower = (voltageDivision - tol) * r1.getResistance() / (1 - (voltageDivision - tol));
             final double r2Upper = (voltageDivision + tol) * r1.getResistance() / (1 - (voltageDivision + tol));
-            for (Resistor rx : resistors.stream().filter(x -> x.getResistance() >= r2Lower && x.getResistance() < r2Upper).toList()) {
+            sublist = resistors.stream().filter(x -> x.getResistance() >= r2Lower && x.getResistance() < r2Upper).toList();
+            for (Resistor rx : sublist) {
                 k = rx.getResistance() / (r1.getResistance() + rx.getResistance());
                 r1r2coincidence = 100 - (Math.abs(voltageDivision - k) * 100)/voltageDivision;
                 result.add(new VoltageDivider(r1, rx, r1r2coincidence));
