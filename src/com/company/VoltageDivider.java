@@ -20,4 +20,6 @@ public class VoltageDivider {
                 + resistor2.getResistance())
                 + "\ncoincidence " + coincidence + "\n";
     }
+
+    public double getCoincidence() { return coincidence; }
 }
