@@ -1,16 +1,28 @@
 package com.company;
 
-public class VoltageDivider {
+public class VoltageDivider implements Comparable<VoltageDivider> {
 
-    private Resistor resistor1 = null;
-    private Resistor resistor2 = null;
+    private Resistor resistor1;
+    private Resistor resistor2;
     private double coincidence;
 
-    // TODO: three corresponding getters
     public VoltageDivider(Resistor r1, Resistor r2, double coincidence) {
         resistor1 = r1;
         resistor2 = r2;
         this.coincidence = coincidence;
+    }
+
+    public double getCoincidence() { return coincidence; }
+
+    @Override
+    public int compareTo(VoltageDivider anotherVoltageDivider) {
+        if ((anotherVoltageDivider.getCoincidence() - this.coincidence) > 0) {
+            return 1;
+        } else if ((anotherVoltageDivider.getCoincidence() - this.coincidence) < 0) {
+            return -1;
+        } else {
+            return 0;
+        }
     }
 
     @Override
@@ -20,6 +32,4 @@ public class VoltageDivider {
                 + resistor2.getResistance())
                 + "\ncoincidence " + coincidence + "\n";
     }
-
-    public double getCoincidence() { return coincidence; }
 }

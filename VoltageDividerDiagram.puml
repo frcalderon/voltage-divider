@@ -1,0 +1,63 @@
+@startuml
+class Client {
++ {static} main()
+}
+
+class SeriesCatalog {
+- series : ArrayList<Series>
+- {static} SeriesNames : String[]
+- {static} SeriesPrecisions : double[]
+- {static} NormalizedValues : double[][]
++ SeriesCatalog()
++ findSeriesByName()
+}
+
+class Series {
+- resistors : ArrayList<Resistor>
+- name : String
+- precision : double
+- normalizedValues : double[]
+- {static} PowerFactors : double[]
++ Series()
++ getName()
++ getPrecision()
++ getResistors()
+- makeResistors()
++ toString()
+}
+
+class Resistor {
+- resistance : double
+- series : Series
++ Resistor()
++ getResistance()
++ compareTo()
++ toString()
+}
+
+class VoltageDivider {
+- resistor1 : Resistor
+- resistor2 : Resistor
+- coincidence : double
++ VoltageDivider()
++ getCoincidence()
++ compareTo()
++ toString()
+}
+
+class VoltageDividerCalculation {
++ calculate()
++ calculateOptimized()
+}
+
+interface Comparable<T> {
++ compareTo()
+}
+
+SeriesCatalog *--> "1..*" Series : series
+Series "1" *--> "*" Resistor : resistors
+Resistor "1" <--x VoltageDivider : resistor1
+Resistor "1" <--x VoltageDivider : resistor2
+Resistor --|> Comparable
+VoltageDivider --|> Comparable
+@enduml
